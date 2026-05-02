@@ -30,7 +30,7 @@ This changes between using [Command Keys](https://modrinth.com/mod/commandkeys) 
 
 This activates your ability in your first and second slot
 
-**/cleareffect <player>**
+**/cleareffects <player>**
 
 This clears the players effects
 

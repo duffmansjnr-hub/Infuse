@@ -203,7 +203,7 @@ public class Infuse extends JavaPlugin implements Listener {
         Bukkit.getPluginManager().registerEvents(new Recipes(this), this);
         Bukkit.getPluginManager().registerEvents(new EquipEffect(this), this);
         Bukkit.getPluginManager().registerEvents(this, this);
-        Bukkit.getPluginManager().registerEvents(new ClearEffect(dataManager), this);
+        Bukkit.getPluginManager().registerEvents(new ClearEffects(dataManager), this);
 
         // Registering events for all the effects
         Bukkit.getPluginManager().registerEvents(new Emerald(this), this);
