@@ -28,7 +28,7 @@ tasks.runServer {
 java {
     toolchain.languageVersion = JavaLanguageVersion.of(25)
     sourceCompatibility = JavaVersion.toVersion(25)
-    targetCompatibility = JavaVersion.toVersion(25)
+    targetCompatibility = JavaVersion.toVersion(21)
 }
 
 tasks.withType<JavaCompile>().configureEach {
