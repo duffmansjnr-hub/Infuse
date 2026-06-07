@@ -1,10 +1,11 @@
 package com.catadmirer.infuseSMP.commands;
 
+import com.catadmirer.infuseSMP.effects.InfuseEffect;
 import com.catadmirer.infuseSMP.inventories.EffectChooser;
+import com.catadmirer.infuseSMP.Infuse;
 import com.catadmirer.infuseSMP.Message;
 import com.catadmirer.infuseSMP.Message.MessageType;
 import com.catadmirer.infuseSMP.inventories.AugOrRegChooser;
-import com.catadmirer.infuseSMP.effects.InfuseEffect;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -16,32 +17,25 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.jspecify.annotations.NonNull;
 
 public class GUI implements Listener, CommandExecutor {
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (command.getName().equalsIgnoreCase("infuses")) {
-            // Opening the gui for players only.
-            if (sender instanceof Player player) {
-                player.openInventory(new EffectChooser().getInventory());
-            } else {
-                sender.sendMessage(new Message(MessageType.ERROR_NOT_PLAYER).toComponent());
-            }
-
-            return true;
-        }
-        
-        return false;
+    private final Infuse plugin;
+    
+    public GUI(Infuse plugin) {
+        this.plugin = plugin;
     }
 
     @EventHandler
     public void onClick(InventoryClickEvent event) {
         HumanEntity player = event.getWhoClicked();
         Inventory clickedInventory = event.getClickedInventory();
-        if (clickedInventory == null) return;
 
+        // Ignoring if the player clicked on an empty slot.
         ItemStack clicked = event.getCurrentItem();
         if (clicked == null || clicked.getType() == Material.AIR) return;
 
+        if (clickedInventory == null) return;
         // Only running if the inventory is an EffectInventory
         if (clickedInventory.getHolder() instanceof EffectChooser) {
             // Cancelling the click event to prevent the player from getting the item.
@@ -60,5 +54,20 @@ public class GUI implements Listener, CommandExecutor {
                 event.setCancelled(true);
             }
         }
+    }
+
+    public boolean onCommand(@NonNull CommandSender sender, Command command, @NonNull String label, String @NonNull [] args) {
+        if (command.getName().equalsIgnoreCase("infuses")) {
+            // Opening the gui for players only.
+            if (sender instanceof Player player) {
+                player.openInventory(new EffectChooser(plugin).getInventory());
+            } else {
+                sender.sendMessage(new Message(MessageType.ERROR_NOT_PLAYER).toComponent());
+            }
+
+            return true;
+        }
+        
+        return false;
     }
 }

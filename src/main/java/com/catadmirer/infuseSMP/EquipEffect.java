@@ -4,6 +4,7 @@ import com.catadmirer.infuseSMP.Message.MessageType;
 import com.catadmirer.infuseSMP.effects.InfuseEffect;
 import com.catadmirer.infuseSMP.events.EffectEquipEvent;
 import com.catadmirer.infuseSMP.events.EffectUnequipEvent;
+
 import java.util.List;
 import java.util.Random;
 import org.bukkit.entity.Player;
@@ -13,10 +14,13 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.java.JavaPlugin;
 
 public class EquipEffect implements Listener {
-    private final Infuse plugin = JavaPlugin.getPlugin(Infuse.class);
+    private final Infuse plugin;
+
+    public EquipEffect(Infuse plugin) {
+        this.plugin = plugin;
+    }
 
     @EventHandler
     public void onFirstJoin(PlayerJoinEvent event) {
@@ -62,8 +66,6 @@ public class EquipEffect implements Listener {
         // Equipping the effect to the slot.
         plugin.getDataManager().setEffect(player.getUniqueId(), slot, effect);
         new EffectEquipEvent(player, effect, slot).callEvent();
-
-        effect.equip(player);
 
         Message msg = new Message(MessageType.EFFECT_EQUIPPED);
         msg.applyPlaceholder("effect_name", effect.getName());

@@ -1,18 +1,23 @@
 package com.catadmirer.infuseSMP.commands;
 
 import com.catadmirer.infuseSMP.Infuse;
-import com.catadmirer.infuseSMP.effects.InfuseEffect;
 import com.catadmirer.infuseSMP.Message;
 import com.catadmirer.infuseSMP.Message.MessageType;
+
 import java.util.UUID;
+
+import com.catadmirer.infuseSMP.effects.InfuseEffect;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
 
 public class Abilities implements CommandExecutor {
-    private final Infuse plugin = JavaPlugin.getPlugin(Infuse.class);
+    private final Infuse plugin;
+
+    public Abilities(Infuse plugin) {
+        this.plugin = plugin;
+    }
 
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (!(sender instanceof Player player)) {
@@ -20,7 +25,7 @@ public class Abilities implements CommandExecutor {
             return true;
         }
 
-        UUID playerUUID = player.getUniqueId();
+        final UUID playerUUID = player.getUniqueId();
 
         // Finding which slot to activate the spark for.
         String slot;

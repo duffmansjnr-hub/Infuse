@@ -1,7 +1,5 @@
 package com.catadmirer.infuseSMP.managers;
 
-import com.catadmirer.infuseSMP.EffectConstants;
-import com.catadmirer.infuseSMP.EffectIds;
 import com.catadmirer.infuseSMP.Infuse;
 import com.catadmirer.infuseSMP.Message;
 import com.catadmirer.infuseSMP.Message.MessageType;
@@ -47,13 +45,18 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.MenuType;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class EffectCraftManager implements Listener {
-    private final Infuse plugin = JavaPlugin.getPlugin(Infuse.class);
+    private final Infuse plugin;
     private static BossBar ritualBossBar;
     private static EnderCrystal ritualBeam;
+
+    public EffectCraftManager(Infuse plugin) {
+        this.plugin = plugin;
+
+        plugin.getServer().getPluginManager().registerEvents(this, plugin);
+    }
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
@@ -114,7 +117,7 @@ public class EffectCraftManager implements Listener {
         int craftLimit = plugin.getMainConfig().getCraftLimit(effect);
         int numCrafted = plugin.getDataManager().getExistingCount(effect);
         if (numCrafted == craftLimit) {
-            player.sendMessage(Component.text("The max number of ").append(effect.getItemName().toComponent()).append(Component.text("effects has been reached", NamedTextColor.WHITE)));
+            player.sendMessage(Component.text("The max number of ").append(effect.getName().toComponent()).append(Component.text("effects has been reached", NamedTextColor.WHITE)));
             event.setCancelled(true);
             return;
         }
@@ -167,10 +170,10 @@ public class EffectCraftManager implements Listener {
 
         // Starting the ritual for the augmented effect
         // Creating the bossbar
-        Component itemName = effect.getItemName().toComponent();
+        Component itemName = effect.getName().toComponent();
         ritualBossBar = BossBar.bossBar(MiniMessage.miniMessage()
                 .deserialize("🧪 <b>" + effect.getName() + "</b><reset> 🧪").color(itemName.color()), 1,
-                EffectConstants.bossBarColor(effect.getId()), BossBar.Overlay.PROGRESS);
+                effect.getRitualColor(), BossBar.Overlay.PROGRESS);
 
         // Adding every player online to the bossbar
         for (Player p : Bukkit.getOnlinePlayers()) {
@@ -179,7 +182,7 @@ public class EffectCraftManager implements Listener {
 
         // Getting the duration of the ritual
         int ritualDuration;
-        if (effect.getId() == EffectIds.ENDER) {
+        if (effect.toString().equals("aug_ender")) {
             ritualDuration = plugin.getMainConfig().ritualDurationEnder();
         } else {
             ritualDuration = plugin.getMainConfig().ritualDuration();
@@ -253,7 +256,7 @@ public class EffectCraftManager implements Listener {
 
             @Override
             public void run() {
-                progress -= progressDecrement;
+                progress -= (float) progressDecrement;
                 if (progress <= 0) {
                     ritualBossBar.progress(0);
                     cancel();

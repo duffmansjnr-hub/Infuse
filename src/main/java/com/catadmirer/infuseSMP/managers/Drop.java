@@ -1,11 +1,9 @@
 package com.catadmirer.infuseSMP.managers;
 
-import com.catadmirer.infuseSMP.EffectConstants;
 import com.catadmirer.infuseSMP.Infuse;
 import com.catadmirer.infuseSMP.effects.InfuseEffect;
 import org.bukkit.Color;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.World;
@@ -15,38 +13,37 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDropItemEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
 public class Drop implements Listener {
-    private final Infuse plugin = JavaPlugin.getPlugin(Infuse.class);
+    private final Infuse plugin;
 
-    private boolean isInfuseEffect(ItemStack item) {
-        return item != null && item.getType() == Material.POTION && item.getItemMeta().hasCustomModelData();
+    public Drop(Infuse plugin) {
+        this.plugin = plugin;
     }
 
     public void onPickup(EntityPickupItemEvent event) {
         ItemStack item = event.getItem().getItemStack();
-        if (this.isInfuseEffect(item)) {
-            this.playDustEffect(true, InfuseEffect.fromItem(item), event.getItem().getLocation());
-        }
+        InfuseEffect effect = InfuseEffect.fromItem(item);
+        if (effect == null) return;
+        this.playDustEffect(true, effect, event.getItem().getLocation());
     }
 
     @EventHandler
     public void onDrop(EntityDropItemEvent event) {
         final Item droppedItem = event.getItemDrop();
         ItemStack itemStack = droppedItem.getItemStack();
-        if (this.isInfuseEffect(itemStack)) {
-            this.playDustEffectDrop(false, InfuseEffect.fromItem(itemStack), droppedItem.getLocation());
-            droppedItem.setGlowing(true);
-        }
+        InfuseEffect effect = InfuseEffect.fromItem(itemStack);
+        if (effect == null) return;
+        this.playDustEffectDrop(false, effect, droppedItem.getLocation());
+        droppedItem.setGlowing(true);
     }
 
     private void playDustEffect(final boolean bottomToTop, @NotNull InfuseEffect effect, Location location) {
         final Location base = location.add(0, 0.1, 0);
         final World world = location.getWorld();
-        Color color = Color.fromRGB(EffectConstants.potionColor(effect.getId()).getRGB());
+        Color color = Color.fromRGB(effect.getPotionColor().getRGB());
         final Particle.DustOptions dust = new Particle.DustOptions(color, 0.7F);
         final int points = 16;
         final double radius = 0.6;
@@ -76,7 +73,7 @@ public class Drop implements Listener {
     private void playDustEffectDrop(final boolean bottomToTop, InfuseEffect effect, Location location) {
         final Location base = location.add(0, -1.5, 0);
         final World world = location.getWorld();
-        Color color = Color.fromRGB(EffectConstants.potionColor(effect.getId()).getRGB());
+        Color color = Color.fromRGB(effect.getPotionColor().getRGB());
         final Particle.DustOptions dust = new Particle.DustOptions(color, 0.7F);
         final int points = 16;
         final double radius = 0.6;

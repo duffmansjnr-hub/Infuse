@@ -3,9 +3,6 @@ package com.catadmirer.infuseSMP;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import org.bukkit.plugin.java.JavaPlugin;
-
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
@@ -15,7 +12,7 @@ public class Message {
     private List<String> placeholders;
 
     public Message(MessageType messageType) {
-        message = JavaPlugin.getPlugin(Infuse.class).getMessageConfig().getMessage(messageType);
+        message = MessageConfig.getMessage(messageType);
         placeholders = new ArrayList<>(messageType.placeholders);
     }
 
@@ -108,8 +105,8 @@ public class Message {
         INFUSE_GIVEEFFECT_USAGE("<red>Invalid Argument! Please use /infuse giveEffect <player> <aug_fire|ocean>"),
         INFUSE_GIVEEFFECT_SUCCESS(List.of("effect_color", "effect_name"), "%effect_color%You recieved the %effect_name%"),
 
-        INFUSE_CLEAREFFECT_USAGE("<red>Invalid Argument! Please use /infuse clearEffect <player>"),
-        INFUSE_CLEAREFFECT_SUCCESS(List.of("player_name"), "<green>Cleared %player_name%'s effects"),
+        INFUSE_CLEAREFFECTS_USAGE("<red>Invalid Argument! Please use /infuse clearEffects <player>"),
+        INFUSE_CLEAREFFECTS_SUCCESS(List.of("player_name"), "<green>Cleared %player_name%'s effects"),
 
         INFUSE_COOLDOWN_USAGE("<red>Invalid Argument! Please use /infuse cooldown <player>"),
         INFUSE_COOLDOWN_SUCCESS(List.of("player_name"), "<green>Removed %player_name%'s cooldown"),
@@ -122,7 +119,7 @@ public class Message {
 
         EFFECT_EQUIPPED(List.of("effect_name"), "<green>You have equipped the %effect_name%"),
 
-        SWAP_NO_EFFECTS("<red>You do not have any effects equipped to swap."),
+        SWAP_NO_EFFECTS("<red>You do not have any effects equipped to swap."), // todo: deprecate
         SWAP_SUCCESS("<green>Your Effects have been swapped."),
 
         THIEF_STEAL(List.of("victim", "effect_name"), "<yellow>You stole %victim%'s %effect_name% Effect"),

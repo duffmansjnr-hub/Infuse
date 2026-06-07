@@ -1,59 +1,107 @@
 package com.catadmirer.infuseSMP.effects;
 
-import com.catadmirer.infuseSMP.EffectConstants;
 import com.catadmirer.infuseSMP.Infuse;
 import com.catadmirer.infuseSMP.Message;
-import com.catadmirer.infuseSMP.extraeffects.Apophis;
-import com.catadmirer.infuseSMP.extraeffects.Thief;
-import java.util.List;
+import net.kyori.adventure.bossbar.BossBar;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.PotionMeta;
-import org.bukkit.inventory.meta.components.CustomModelDataComponent;
 import org.bukkit.persistence.PersistentDataType;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.jetbrains.annotations.Unmodifiable;
+import org.jspecify.annotations.NonNull;
+
+import java.awt.Color;
+import java.util.HashMap;
+import java.util.Map;
 
 public abstract class InfuseEffect implements Listener {
+    private static final Map<Integer,InfuseEffect> REGISTERED_EFFECTS = new HashMap<>();
+    public static final NamespacedKey AUG_KEY = new NamespacedKey("infuse", "aug");
+
+    protected final String key;
     protected final int id;
-    protected final String name;
     protected final boolean augmented;
+    protected final Color potionColor;
+    protected final BossBar.Color ritualColor;
 
-    protected InfuseEffect(int id, String name, boolean augmented) {
+    public InfuseEffect(String key, int id, boolean augmented, Color potionColor, BossBar.Color ritualColor) {
+        this.key = key;
         this.id = id;
-        this.name = name;
         this.augmented = augmented;
+        this.potionColor = potionColor;
+        this.ritualColor = ritualColor;
     }
 
-    public String getName() {
-        return this.name;
+    public static boolean register(InfuseEffect effect) {
+        if (effect.id > 100) {
+            Infuse.LOGGER.warn("Effect id {} for {} is invalid.  Effect ids cannot be >100.", effect.id, effect.key);
+            return false;
+        }
+
+        InfuseEffect existing = REGISTERED_EFFECTS.get(effect.id);
+        if (existing != null) {
+            Infuse.LOGGER.warn("Effect id {} has already been taken by {}.  Cannot assign it to {}.", effect.id, existing.key, effect.key);
+            return false;
+        }
+
+        REGISTERED_EFFECTS.put(effect.id, effect);
+        return true;
     }
 
-    public boolean isAugmented() {
-        return this.augmented;
-    }
-
-    public String getKey() {
-        return (augmented ? "aug_" + name : name);
+    @NonNull
+    @Unmodifiable
+    public static Map<Integer,InfuseEffect> getRegisteredEffects() {
+        return Map.copyOf(REGISTERED_EFFECTS);
     }
 
     public int getId() {
         return id;
     }
 
-    public abstract Message getItemName();
+    public String getKey() {
+        return key;
+    }
 
-    public abstract Message getItemLore();
+    public boolean isAugmented() {
+        return augmented;
+    }
 
-    public abstract void equip(Player player);
-    public abstract void unequip(Player player);
+    public Color getPotionColor() {
+        return potionColor;
+    }
 
-    public abstract void activateSpark(Player player);
+    public BossBar.Color getRitualColor() {
+        return ritualColor;
+    }
 
-    public abstract InfuseEffect getAugmentedForm();
-    public abstract InfuseEffect getRegularForm();
+    @Override
+    public boolean equals(Object other) {
+        if (!(other instanceof InfuseEffect effect)) return false;
+
+        return effect.augmented == this.augmented && effect.id == this.id;
+    }
+
+    @Override
+    public String toString() {
+        return (augmented ? "aug_" : "") + key;
+    }
+
+    public abstract void equip(Player player, int slot);
+    public abstract void unequip(Player player, int slot);
+
+    public abstract void applyPassives(Player owner);
+    public abstract void activateSpark(Player owner);
+
+    public abstract InfuseEffect getRegularVersion();
+    public abstract InfuseEffect getAugmentedVersion();
+
+    public abstract Message getName();
+    public abstract Message getLore();
 
     public char getIcon() {
         return (char) Integer.parseInt("E" + (augmented ? 2 : 0) + String.format("%02d", id), 16);
@@ -63,71 +111,64 @@ public abstract class InfuseEffect implements Listener {
         return (char) Integer.parseInt("E" + (augmented ? 3 : 1) + String.format("%02d", id), 16);
     }
 
-    // public abstract InfuseEffect regular();
+    public static InfuseEffect fromString(@Nullable String key) {
+        if (key == null) return null;
 
-    // public abstract InfuseEffect augmented();
-
-    /**
-     * Creates the effect as a potion item.
-     * 
-     * @return An {@link ItemStack} instance for a player to use to get an effect.
-     */
-    @NotNull
-    public ItemStack createItem() {
-        ItemStack effectItem = new ItemStack(Material.POTION);
-        PotionMeta meta = (PotionMeta) effectItem.getItemMeta();
-
-        if (meta != null) {
-            // Setting the usual data
-            meta.displayName(getItemName().toComponent());
-            meta.lore(getItemLore().toComponentList());
-            meta.setColor(org.bukkit.Color.fromARGB(EffectConstants.potionColor(id).getRGB()));
-            meta.getPersistentDataContainer().set(Infuse.EFFECT_KEY, PersistentDataType.STRING, getKey());
-
-            // Applying the custom model if the key has the "aug_" prefix
-            if (augmented) {
-                CustomModelDataComponent customModelData = meta.getCustomModelDataComponent();
-                customModelData.setFloats(List.of(999f));
-                meta.setCustomModelDataComponent(customModelData);
-            }
-
-            effectItem.setItemMeta(meta);
+        // Checking if the effect is augmented
+        boolean augmented = key.startsWith("aug_");
+        if (augmented) {
+            key = key.substring(4);
         }
 
-        return effectItem;
+        // Searching for a matching registered effect
+        for (InfuseEffect effect : REGISTERED_EFFECTS.values()) {
+            if (!effect.getKey().equals(key)) continue;
+
+            return augmented ? effect.getAugmentedVersion() : effect.getRegularVersion();
+        }
+
+        Infuse.LOGGER.warn("No effect found for string '{}'.", key);
+        return null;
     }
 
-    @Override
-    public boolean equals(Object other) {
-        if (!(other instanceof InfuseEffect effect)) return false;
+    /**
+     * Creates an {@link ItemStack} representation of the effect for a player to consume.
+     *
+     * @return The corresponding {@link ItemStack}
+     */
+    public ItemStack createItem() {
+        ItemStack item = new ItemStack(Material.POTION);
+        PotionMeta meta = (PotionMeta) item.getItemMeta();
+        meta.customName(getName().toComponent());
+        meta.lore(getLore().toComponentList());
+        meta.setColor(org.bukkit.Color.fromARGB(potionColor.getRGB()));
+        meta.getPersistentDataContainer().set(Infuse.EFFECT_KEY, PersistentDataType.STRING, toString());
+        meta.addItemFlags(ItemFlag.HIDE_ADDITIONAL_TOOLTIP);
 
-        return effect.getKey().equals(getKey());
+        if (augmented) {
+            meta.setItemModel(AUG_KEY);
+        }
+
+        item.setItemMeta(meta);
+        return item;
     }
 
     /**
      * Checks if an {@link ItemStack} was created by this effect.
-     * 
+     *
      * @param item The item to check.
-     * 
+     *
      * @return Whether or not the item was created by this effect.
      */
-    public boolean isEffect(@Nullable ItemStack item) {
+    public boolean itemMatches(@Nullable ItemStack item) {
         if (item == null) return false;
         if (item.getType() != Material.POTION) return false;
         if (!item.hasItemMeta()) return false;
 
-        return getKey().equals(item.getItemMeta().getPersistentDataContainer().get(Infuse.EFFECT_KEY, PersistentDataType.STRING));
+        return key.equals(item.getItemMeta().getPersistentDataContainer().get(Infuse.EFFECT_KEY, PersistentDataType.STRING));
     }
 
-    /**
-     * Gets an {@link InfuseEffect} from an {@link ItemStack}.
-     * 
-     * @param item The item to get the effect from.
-     * 
-     * @return The effect mapping the item corresponds to.  Returns null if the item is null or has an invalid effect key.
-     */
-    @Nullable
-    public static InfuseEffect fromItem(@Nullable ItemStack item) {
+    public static InfuseEffect fromItem(ItemStack item) {
         if (item == null) return null;
         if (item.getType() != Material.POTION) return null;
         if (!item.hasItemMeta()) return null;
@@ -135,31 +176,32 @@ public abstract class InfuseEffect implements Listener {
         String key = item.getItemMeta().getPersistentDataContainer().get(Infuse.EFFECT_KEY, PersistentDataType.STRING);
         if (key == null) return null;
 
-        return fromEffectKey(key);
+        return fromString(key);
+    }
+
+    /** Serializes an InfuseEffect into an int */
+    public int serialize() {
+        return (augmented ? 100 : 0) + id;
     }
 
     /**
-     * Gets an {@link InfuseEffect} from the effect's key.
-     * 
-     * @param key The key of the effect.
-     * 
-     * @return The effect mapping the item corresponds to.  Returns null if the key is invalid.
+     * Deserializes an InfuseEffect from an int
+     *
+     * The first two digits of an infuse effect are the effect id.  IDs 0-12 are taken by the base Effects.
+     * If the number is >= 100, then the effect will be converted to its augmented form.
+     *
+     * @param serialized The serialized int
      */
-    @Nullable
-    public static InfuseEffect fromEffectKey(@Nullable String key) {
-        // TODO: Add the rest of the effect keys
-        switch (key) {
-            case "emerald":
-                return new Emerald();
-        
-            default:
-                break;
+    public static InfuseEffect deserialize(int serialized) {
+        if (!REGISTERED_EFFECTS.containsKey(serialized % 100)) {
+            Infuse.LOGGER.warn("Could not find an effect registered to id {}", serialized % 100);
+            return null;
         }
 
-        return null;
-    }
+        boolean augmented = serialized > 99;
+        int id = serialized % 100;
+        InfuseEffect effect = REGISTERED_EFFECTS.get(id);
 
-    public static List<InfuseEffect> getAllEffects() {
-        return List.of(new Emerald(true), new Emerald(false), new Ender(true), new Ender(false), new Feather(true), new Feather(false), new Fire(true), new Fire(false), new Frost(true), new Frost(false), new Haste(true), new Haste(false), new Heart(true), new Heart(false), new Invis(true), new Invis(false), new Ocean(true), new Ocean(false), new Regen(true), new Regen(false), new Speed(true), new Speed(false), new Strength(true), new Strength(false), new Thunder(true), new Thunder(false), new Thief(true), new Thief(false), new Apophis(true), new Apophis(false));
+        return augmented ? effect.getAugmentedVersion() : effect.getRegularVersion();
     }
 }

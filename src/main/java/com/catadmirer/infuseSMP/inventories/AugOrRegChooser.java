@@ -1,8 +1,8 @@
 package com.catadmirer.infuseSMP.inventories;
 
 import com.catadmirer.infuseSMP.EffectConstants;
-import com.catadmirer.infuseSMP.effects.InfuseEffect;
 import com.catadmirer.infuseSMP.Message;
+import com.catadmirer.infuseSMP.effects.InfuseEffect;
 import com.catadmirer.infuseSMP.util.InventoryUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
@@ -19,8 +19,8 @@ public class AugOrRegChooser implements InventoryHolder {
         InventoryUtils.fillInventory(inventory, InventoryUtils.createNoName(EffectConstants.menuBackgroundColor(effect.getId())));
 
         // Adding the effects to the inventory
-        inventory.setItem(11, effect.getRegularForm().createItem());
-        inventory.setItem(15, effect.getAugmentedForm().createItem());
+        inventory.setItem(11, effect.getRegularVersion().createItem());
+        inventory.setItem(15, effect.getAugmentedVersion().createItem());
 
         // Locking the inventory
         InventoryUtils.lockInventory(inventory);

@@ -1,41 +1,36 @@
 package com.catadmirer.infuseSMP;
 
 import com.catadmirer.infuseSMP.Message.MessageType;
-import com.catadmirer.infuseSMP.effects.InfuseEffect;
+
 import java.io.File;
 import java.io.IOException;
+
+import com.catadmirer.infuseSMP.effects.InfuseEffect;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.java.JavaPlugin;
 
 public class MessageConfig {
+    // Config and config files
+    public static final File file = new File("plugins/Infuse/messages.yml");
+    public static final YamlConfiguration config = new YamlConfiguration();
+
     // Text serializers
     public static final MiniMessage minimessage = MiniMessage.miniMessage();
     public static final LegacyComponentSerializer legacyAmpersand = LegacyComponentSerializer.legacyAmpersand();
-
-    // Config and config files
-    public final File file;
-    public final YamlConfiguration config;
-
-    public MessageConfig() {
-        Infuse plugin = JavaPlugin.getPlugin(Infuse.class);
-        file = new File(plugin.getDataFolder(), "messages.yml");
-        config = YamlConfiguration.loadConfiguration(file);
-    }
 
     /**
      * Reloads the configuration.
      *
      * @return Whether the configuration was loaded successfully.
      */
-    public boolean load() {
+    public static boolean load(Plugin plugin) {
         // Creating the file if it doesn't exist.
         // If the function returns false, the load function fails too.
         // Logging is handled by the function.
-        if (!createFile(JavaPlugin.getPlugin(Infuse.class), false)) {
+        if (!createFile(plugin, false)) {
             return false;
         }
 
@@ -60,7 +55,7 @@ public class MessageConfig {
      * @param replace Whether or not to replace the config file with the default configs.
      * @return Whether or not the file was created successfully.
      */
-    public boolean createFile(Plugin plugin, boolean replace) {
+    public static boolean createFile(Plugin plugin, boolean replace) {
         // Creating the file if it doesn't exist.
         if (!file.exists()) {
             plugin.saveResource(file.getName(), replace);
@@ -75,7 +70,7 @@ public class MessageConfig {
         return true;
     }
 
-    public String getMessage(MessageType message) {
+    public static String getMessage(MessageType message) {
         // Checking that the config contains the message
         if (!config.contains(message.configKey)) {
             Infuse.LOGGER.error("Could not find \"{}\" in the config.", message.configKey);
@@ -103,7 +98,7 @@ public class MessageConfig {
         }
     }
 
-    public void applyUpdates() {
+    public static void applyUpdates() {
         config.set("invis.kill_invis", null);
         config.set("invis.death_invis", null);
 
@@ -163,13 +158,23 @@ public class MessageConfig {
         }
 
         if (config.contains("infuse_cleareffect.usage")) {
-            config.set("infuse_cleareffect_usage", config.get("infuse_cleareffect.usage", MessageType.INFUSE_CLEAREFFECT_USAGE.defaultValue));
+            config.set("infuse_cleareffects_usage", config.get("infuse_cleareffect.usage", MessageType.INFUSE_CLEAREFFECTS_USAGE.defaultValue));
             config.set("infuse_cleareffect.usage", null);
         }
 
         if (config.contains("infuse_cleareffect.success")) {
-            config.set("infuse_cleareffect_success", config.get("infuse_cleareffect.success", MessageType.INFUSE_CLEAREFFECT_SUCCESS.defaultValue));
+            config.set("infuse_cleareffects_success", config.get("infuse_cleareffect.success", MessageType.INFUSE_CLEAREFFECTS_SUCCESS.defaultValue));
             config.set("infuse_cleareffect.success", null);
+        }
+
+        if (config.contains("infuse_cleareffect_usage")) {
+            config.set("infuse_cleareffects_usage", config.get("infuse_cleareffect_usage", MessageType.INFUSE_CLEAREFFECTS_USAGE.defaultValue));
+            config.set("infuse_cleareffect_usage", null);
+        }
+
+        if (config.contains("infuse_cleareffect_success")) {
+            config.set("infuse_cleareffects_success", config.get("infuse_cleareffect_success", MessageType.INFUSE_CLEAREFFECTS_SUCCESS.defaultValue));
+            config.set("infuse_cleareffect_success", null);
         }
 
         if (config.contains("infuse_cooldown.usage")) {
@@ -227,8 +232,8 @@ public class MessageConfig {
             config.set("errors.target_not_found", null);
         }
 
-        for (InfuseEffect effect : InfuseEffect.getAllEffects()) {
-            String effectKey = effect.getKey();
+        for (InfuseEffect effect : InfuseEffect.getRegisteredEffects().values()) {
+            String effectKey = effect.toString();
 
             MessageType effect_name = MessageType.valueOf(effectKey.toUpperCase() + "_NAME");
             MessageType effect_lore = MessageType.valueOf(effectKey.toUpperCase() + "_LORE");

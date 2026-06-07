@@ -1,21 +1,23 @@
 package com.catadmirer.infuseSMP;
 
 import com.catadmirer.infuseSMP.effects.InfuseEffect;
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.plugin.Plugin;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
-import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.plugin.java.JavaPlugin;
 
 public class MainConfig {
     public final File file;
     public final FileConfiguration config;
-    public final Infuse plugin = JavaPlugin.getPlugin(Infuse.class);
+    public final Infuse plugin;
 
-    public MainConfig() {
+    public MainConfig(Infuse plugin) {
+        this.plugin = plugin;
         this.file = new File(plugin.getDataFolder(), "config.yml");
         this.config = YamlConfiguration.loadConfiguration(file);
     }
@@ -34,6 +36,7 @@ public class MainConfig {
 
         // Creating the file if it doesn't exist.
         if (!file.exists()) {
+            file.getParentFile().mkdirs();
             plugin.saveResource(file.getName(), true);
         }
 
@@ -130,7 +133,7 @@ public class MainConfig {
     }
 
     public List<InfuseEffect> joinEffects() {
-        return config.getStringList("join_effects").stream().map(InfuseEffect::fromEffectKey).filter(Objects::nonNull).toList();
+        return config.getStringList("join_effects").stream().map(InfuseEffect::fromString).filter(Objects::nonNull).toList();
     }
 
     public boolean enableApophis() {
@@ -153,7 +156,7 @@ public class MainConfig {
      * @return The number of effects that can be crafted of the specified {@link InfuseEffect}.
      */
     public int getCraftLimit(InfuseEffect effect) {
-        List<Integer> craftLimits = config.getIntegerList("craft-limits." + effect.getKey());
+        List<Integer> craftLimits = config.getIntegerList("craft_limits." + effect.getKey());
 
         if (craftLimits.size() != 2) {
             Infuse.LOGGER.error("Craft limits are required to be a list of 2 integers.  Found {} entries for effect {}", craftLimits.size(), effect.getKey());
@@ -178,11 +181,11 @@ public class MainConfig {
     }
 
     public long cooldown(InfuseEffect effect) {
-        return config.getLong(effect.getName() + ".cooldown." + (effect.isAugmented() ? "augmented" : "default"));
+        return config.getLong(effect.getKey() + ".cooldown." + (effect.isAugmented() ? "augmented" : "default"));
     }
 
     public long duration(InfuseEffect effect) {
-        return config.getLong(effect.getName() + ".duration." + (effect.isAugmented() ? "augmented" : "default"));
+        return config.getLong(effect.getKey() + ".duration." + (effect.isAugmented() ? "augmented" : "default"));
     }
 
     public int speedDashMultiplier() {

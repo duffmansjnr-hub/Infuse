@@ -1,6 +1,5 @@
 package com.catadmirer.infuseSMP.managers;
 
-import com.catadmirer.infuseSMP.EffectConstants;
 import com.catadmirer.infuseSMP.EffectIds;
 import com.catadmirer.infuseSMP.Infuse;
 import com.catadmirer.infuseSMP.effects.InfuseEffect;
@@ -9,10 +8,13 @@ import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Particle.DustOptions;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
 
 public class ParticleManager {
-    private final Infuse plugin = JavaPlugin.getPlugin(Infuse.class);
+    private final Infuse plugin;
+
+    public ParticleManager(Infuse plugin) {
+        this.plugin = plugin;
+    }
 
     public void spawnEffectParticles(Player player, String slot) {
         InfuseEffect effect = plugin.getDataManager().getEffect(player.getUniqueId(), slot);
@@ -25,7 +27,7 @@ public class ParticleManager {
             return;
         }
 
-        player.getWorld().spawnParticle(Particle.ENTITY_EFFECT, player.getLocation().add(0, 1, 0), 2, 0.3, 0.5, 0.3, 0.1, Color.fromARGB(EffectConstants.potionColor(effect.getId()).getRGB()));
+        player.getWorld().spawnParticle(Particle.ENTITY_EFFECT, player.getLocation().add(0, 1, 0), 2, 0.3, 0.5, 0.3, 0.1, Color.fromARGB(effect.getPotionColor().getRGB()));
     }
 
     /**

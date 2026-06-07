@@ -1,22 +1,26 @@
 package com.catadmirer.infuseSMP.commands;
 
 import com.catadmirer.infuseSMP.Infuse;
-import com.catadmirer.infuseSMP.effects.InfuseEffect;
 import com.catadmirer.infuseSMP.Message;
 import com.catadmirer.infuseSMP.Message.MessageType;
+import com.catadmirer.infuseSMP.effects.InfuseEffect;
 import com.catadmirer.infuseSMP.events.EffectUnequipEvent;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.jspecify.annotations.NonNull;
 
 public class DrainCommand implements CommandExecutor, Listener {
-    private final Infuse plugin = JavaPlugin.getPlugin(Infuse.class);
+    private final Infuse plugin;
+
+    public DrainCommand(Infuse plugin) {
+        this.plugin = plugin;
+    }
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+    public boolean onCommand(@NonNull CommandSender sender, @NonNull Command command, @NonNull String label, String @NonNull [] args) {
         if (!(sender instanceof Player player)) {
             sender.sendMessage(new Message(MessageType.ERROR_NOT_PLAYER).toComponent());
             return true;
@@ -49,7 +53,7 @@ public class DrainCommand implements CommandExecutor, Listener {
             player.sendMessage(new Message(MessageType.ERROR_INV_FULL).toComponent());
             return true;
         }
-    
+
         // Removing the effect from the player
         plugin.getDataManager().removeEffect(player.getUniqueId(), slot);
         Message msg = new Message(MessageType.DRAIN_SUCCESS);

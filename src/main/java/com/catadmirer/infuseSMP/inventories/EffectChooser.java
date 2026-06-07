@@ -1,24 +1,20 @@
 package com.catadmirer.infuseSMP.inventories;
 
 import com.catadmirer.infuseSMP.Infuse;
+import com.catadmirer.infuseSMP.Message;
 import com.catadmirer.infuseSMP.effects.*;
 import com.catadmirer.infuseSMP.extraeffects.*;
-import com.catadmirer.infuseSMP.Message;
 import com.catadmirer.infuseSMP.util.InventoryUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
-public class EffectChooser implements InventoryHolder, Listener {
+public class EffectChooser implements InventoryHolder {
     private final Inventory inventory;
 
-    public EffectChooser() {
+    public EffectChooser(Infuse plugin) {
         inventory = Bukkit.createInventory(this, 54, Message.toComponent("<b>Infuses"));
 
         // Filling the inventory with decorative glass panes
@@ -43,7 +39,6 @@ public class EffectChooser implements InventoryHolder, Listener {
         inventory.setItem(33, new Haste(true).createItem());
         inventory.setItem(40, new Thunder(true).createItem());
 
-        Infuse plugin = JavaPlugin.getPlugin(Infuse.class);
         if (plugin.getMainConfig().enableThief()) {
             inventory.setItem(39, new Thief(true).createItem());
         }
@@ -58,23 +53,5 @@ public class EffectChooser implements InventoryHolder, Listener {
     @Override
     public @NotNull Inventory getInventory() {
         return inventory;
-    }
-
-    @EventHandler
-    public void onClick(InventoryClickEvent event) {
-        // Only running if the inventory is an EffectChooser
-        if (!(event.getClickedInventory().getHolder() instanceof EffectChooser)) return;
-
-        // Cancelling the click event
-        event.setCancelled(true);
-        
-        // Getting the effect the player clicked
-        InfuseEffect effect = InfuseEffect.fromItem(event.getCurrentItem());
-
-        // Ignoring if the player clicked on something other than an effect.
-        if (effect == null) return;
-
-        // Opening the AugOrRegChooser menu for the effect the player clicked
-        event.getWhoClicked().openInventory(new AugOrRegChooser(effect).getInventory());
     }
 }

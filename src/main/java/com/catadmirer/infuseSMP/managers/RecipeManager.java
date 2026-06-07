@@ -1,9 +1,9 @@
 package com.catadmirer.infuseSMP.managers;
 
-import com.catadmirer.infuseSMP.Infuse;
+import java.io.File;
+
 import com.catadmirer.infuseSMP.effects.Ender;
 import com.catadmirer.infuseSMP.effects.InfuseEffect;
-import java.io.File;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -13,14 +13,16 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
-import org.bukkit.plugin.java.JavaPlugin;
+import com.catadmirer.infuseSMP.Infuse;
 
 public class RecipeManager {
-    private final Infuse plugin = JavaPlugin.getPlugin(Infuse.class);
+    private final Infuse plugin;
     private final File recipesFile;
     private final FileConfiguration recipesConfig;
 
-    public RecipeManager() {
+    public RecipeManager(Infuse plugin) {
+        this.plugin = plugin;
+
         recipesFile = new File(plugin.getDataFolder(), "recipes.yml");
         if (!recipesFile.exists()) {
             plugin.saveResource("recipes.yml", false);
@@ -36,8 +38,7 @@ public class RecipeManager {
      */
     public void reload() {
         // Removing all the infuse recipes
-        for (InfuseEffect effect : InfuseEffect.getAllEffects()) {
-            if (effect.isAugmented()) continue;
+        for (InfuseEffect effect : InfuseEffect.getRegisteredEffects().values()) {
             Bukkit.removeRecipe(getRecipeKey(effect), true);
         }
 
@@ -47,23 +48,22 @@ public class RecipeManager {
 
     /** Registers the recipe for each effect. */
     public void registerRecipes() {
-        for (InfuseEffect effect : InfuseEffect.getAllEffects()) {
-            if (effect.isAugmented()) continue;
+        for (InfuseEffect effect : InfuseEffect.getRegisteredEffects().values()) {
             if (!isRecipeEnabled(effect)) continue;
-            ShapedRecipe recipe = getRecipe(effect);
+            ShapedRecipe recipe = getRecipe(effect.getRegularVersion());
             
             Bukkit.addRecipe(recipe);
         }
     }
 
-    public boolean isRecipeEnabled(InfuseEffect effect) {
-        return recipesConfig.getBoolean(effect.getName() + ".enabled", false);
+    public boolean isRecipeEnabled(InfuseEffect mapping) {
+        return recipesConfig.getBoolean(mapping.getKey() + ".enabled", false);
     }
 
-    public ShapedRecipe getRecipe(InfuseEffect effect) {
-        String baseKey = effect.getName();
+    public ShapedRecipe getRecipe(InfuseEffect mapping) {
+        String baseKey = mapping.getKey();
         NamespacedKey recipeKey = new NamespacedKey(plugin, baseKey);
-        ShapedRecipe effectRecipe = new ShapedRecipe(recipeKey, effect.getRegularForm().createItem());
+        ShapedRecipe effectRecipe = new ShapedRecipe(recipeKey, mapping.getRegularVersion().createItem());
 
         effectRecipe.shape(recipesConfig.getStringList(baseKey + ".shape").toArray(String[]::new));
         ConfigurationSection ingredientsConfig = recipesConfig.getConfigurationSection(baseKey + ".ingredients");
@@ -78,9 +78,8 @@ public class RecipeManager {
     }
 
     public void updateEnderRecipe() {
-        Ender effect = new Ender(true);
-        if (plugin.getDataManager().getExistingCount(effect) > 0) {
-            ShapedRecipe enderRecipe = getRecipe(effect);
+        if (plugin.getDataManager().getExistingCount(new Ender(true)) > 0) {
+            ShapedRecipe enderRecipe = getRecipe(new Ender(false));
             Bukkit.removeRecipe(enderRecipe.getKey(), true);
 
             String matName = recipesConfig.getString("ender.egg_replacement");
@@ -99,7 +98,7 @@ public class RecipeManager {
     }
 
     public NamespacedKey getRecipeKey(InfuseEffect effect) {
-        return new NamespacedKey(plugin, effect.getName());
+        return new NamespacedKey(plugin, effect.getKey());
     }
 
     /**
@@ -119,7 +118,7 @@ public class RecipeManager {
         if (effect.isAugmented()) return null;
 
         // Checking if the augmented limit has been reached
-        InfuseEffect augEffect = effect.getAugmentedForm();
+        InfuseEffect augEffect = effect.getAugmentedVersion();
         if (plugin.getMainConfig().getCraftLimit(augEffect) > plugin.getDataManager().getExistingCount(augEffect)) {
             return augEffect.createItem();
         }

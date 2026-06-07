@@ -6,6 +6,7 @@ import com.catadmirer.infuseSMP.Message.MessageType;
 import com.catadmirer.infuseSMP.effects.InfuseEffect;
 import com.catadmirer.infuseSMP.inventories.RecipeGUI;
 import com.catadmirer.infuseSMP.inventories.RecipeListGUI;
+
 import java.util.ArrayList;
 import java.util.List;
 import net.kyori.adventure.text.Component;
@@ -19,10 +20,13 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.java.JavaPlugin;
 
 public class Recipes implements CommandExecutor, Listener {
-    private static Infuse plugin = JavaPlugin.getPlugin(Infuse.class);
+    private static Infuse plugin;
+
+    public Recipes(Infuse plugin) {
+        Recipes.plugin = plugin;
+    }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -36,8 +40,8 @@ public class Recipes implements CommandExecutor, Listener {
 
     /**
      * Create a potion effect with the effect limits for lore rather than the default lore.
-     * 
-     * @param potionName The name of the potion to create.
+     *
+     * @param effect The {@link InfuseEffect} to create.
      * 
      * @return The effect item with modified lore.
      */
@@ -48,8 +52,8 @@ public class Recipes implements CommandExecutor, Listener {
         // Creating the potion from the effect
         ItemStack potionItem = effect.createItem();
 
-        int augLeft = plugin.getMainConfig().getCraftLimit(effect.getAugmentedForm()) - plugin.getDataManager().getExistingCount(effect.getAugmentedForm());
-        int regLeft = plugin.getMainConfig().getCraftLimit(effect) - plugin.getDataManager().getExistingCount(effect);
+        int augLeft = plugin.getMainConfig().getCraftLimit(effect.getAugmentedVersion()) - plugin.getDataManager().getExistingCount(effect.getAugmentedVersion());
+        int regLeft = plugin.getMainConfig().getCraftLimit(effect.getRegularVersion()) - plugin.getDataManager().getExistingCount(effect.getRegularVersion());
 
         potionItem.editMeta(meta -> {
             List<Component> lore = new ArrayList<>();

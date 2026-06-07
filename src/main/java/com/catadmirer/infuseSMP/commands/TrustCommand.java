@@ -1,17 +1,20 @@
 package com.catadmirer.infuseSMP.commands;
 
-import com.catadmirer.infuseSMP.Infuse;
 import com.catadmirer.infuseSMP.Message;
 import com.catadmirer.infuseSMP.Message.MessageType;
+import com.catadmirer.infuseSMP.managers.DataManager;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
 
 public class TrustCommand implements CommandExecutor {
-    private final Infuse plugin = JavaPlugin.getPlugin(Infuse.class);
+    private final DataManager dataManager;
+
+    public TrustCommand(DataManager dataManager) {
+        this.dataManager = dataManager;
+    }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -45,14 +48,14 @@ public class TrustCommand implements CommandExecutor {
         // Making the caster trust the target.
         if (label.equalsIgnoreCase("trust")) {
             // Preventing duplicate trust entries
-            if (plugin.getDataManager().getTrusted(caster).contains(target)) {
+            if (dataManager.getTrusted(caster).contains(target)) {
                 Message msg = new Message(MessageType.TRUST_ALREADYTRUSTED);
                 msg.applyPlaceholder("target", target.getName());
                 caster.sendMessage(msg.toComponent());
                 return true;
             }
 
-            plugin.getDataManager().addTrust(caster, target);
+            dataManager.addTrust(caster, target);
             Message msg = new Message(MessageType.TRUST_ADDED);
             msg.applyPlaceholder("target", target.getName());
             caster.sendMessage(msg.toComponent());
@@ -62,14 +65,14 @@ public class TrustCommand implements CommandExecutor {
         // Making the caster untrust the target.
         if (label.equalsIgnoreCase("untrust")) {
             // Handling if the player already didnt trust the target
-            if (!plugin.getDataManager().getTrusted(caster).contains(target)) {
+            if (!dataManager.getTrusted(caster).contains(target)) {
                 Message msg = new Message(MessageType.TRUST_NOTTRUSTED);
                 msg.applyPlaceholder("target", target.getName());
                 caster.sendMessage(msg.toComponent());
                 return true;
             }
             
-            plugin.getDataManager().removeTrust(caster, target);
+            dataManager.removeTrust(caster, target);
             Message msg = new Message(MessageType.TRUST_REMOVED);
             msg.applyPlaceholder("target", target.getName());
             caster.sendMessage(msg.toComponent());

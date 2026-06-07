@@ -1,19 +1,21 @@
 package com.catadmirer.infuseSMP.placeholders;
 
-import com.catadmirer.infuseSMP.EffectConstants;
 import com.catadmirer.infuseSMP.Infuse;
-import com.catadmirer.infuseSMP.managers.CooldownManager;
 import com.catadmirer.infuseSMP.effects.InfuseEffect;
+import com.catadmirer.infuseSMP.managers.CooldownManager;
 import com.catadmirer.infuseSMP.util.MessageUtil;
 import java.util.UUID;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
 public class InfusePlaceholders extends PlaceholderExpansion {
-    private Infuse plugin = JavaPlugin.getPlugin(Infuse.class);
+    private Infuse plugin;
+
+    public InfusePlaceholders(Infuse plugin) {
+        this.plugin = plugin;
+    }
 
     @Override
     public String getAuthor() {
@@ -63,7 +65,7 @@ public class InfusePlaceholders extends PlaceholderExpansion {
             return plugin.getMainConfig().emptyEffectIcon() ? "\uE901" : "";
         }
 
-        return "" + (CooldownManager.isEffectActive(uuid, effect.getName()) ? effect.getActiveIcon() : effect.getIcon());
+        return "" + (CooldownManager.isEffectActive(uuid, effect.getKey()) ? effect.getActiveIcon() : effect.getIcon());
     }
 
     public String getTime(UUID uuid, String slot) {
@@ -72,7 +74,7 @@ public class InfusePlaceholders extends PlaceholderExpansion {
         String key = effect.getKey();
         if (CooldownManager.isEffectActive(uuid, key)) {
             long timeLeft = CooldownManager.getEffectTimeLeft(uuid, key) / 1000;
-            return "<#" + Integer.toHexString(EffectConstants.potionColor(effect.getId()).getRGB() & 0xFFFFFF) + ">" + MessageUtil.formatTime(timeLeft);
+            return "<#" + Integer.toHexString(effect.getPotionColor().getRGB() & 0xFFFFFF) + ">" + MessageUtil.formatTime(timeLeft);
         } else if (CooldownManager.isOnCooldown(uuid, key)) {
             long timeLeft = CooldownManager.getCooldownTimeLeft(uuid, key) / 1000;
             return "<white>" + MessageUtil.formatTime(timeLeft);
@@ -85,13 +87,13 @@ public class InfusePlaceholders extends PlaceholderExpansion {
         InfuseEffect effect = plugin.getDataManager().getEffect(uuid, slot);
         if (effect== null) return "";
         
-        return PlainTextComponentSerializer.plainText().serialize(effect.getItemName().toComponent());
+        return PlainTextComponentSerializer.plainText().serialize(effect.getName().toComponent());
     }
 
     public String getEffectName(UUID uuid, String slot) {
         InfuseEffect effect = plugin.getDataManager().getEffect(uuid, slot);
         if (effect == null) return "";
         
-        return effect.getItemName().toString();
+        return effect.getName().toString();
     }
 }
