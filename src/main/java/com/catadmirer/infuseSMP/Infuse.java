@@ -47,6 +47,10 @@ public class Infuse extends JavaPlugin implements Listener {
     private final RecipeManager recipeManager;
     private final ParticleManager particleManager;
 
+    public static Infuse getInstance() {
+        return instance;
+    }
+
     public Infuse() {
         new ApophisManager(this);
         this.mainConfig = new MainConfig(this);
@@ -206,28 +210,28 @@ public class Infuse extends JavaPlugin implements Listener {
         Bukkit.getPluginManager().registerEvents(new ClearEffects(dataManager), this);
 
         // Registering events for all the effects
-        Bukkit.getPluginManager().registerEvents(new Emerald(this), this);
-        Bukkit.getPluginManager().registerEvents(new Ender(this), this);
-        Bukkit.getPluginManager().registerEvents(new Feather(this), this);
-        Bukkit.getPluginManager().registerEvents(new Fire(this), this);
-        Bukkit.getPluginManager().registerEvents(new Frost(dataManager, this), this);
-        Bukkit.getPluginManager().registerEvents(new Haste(this), this);
-        Bukkit.getPluginManager().registerEvents(new Heart(this), this);
-        Bukkit.getPluginManager().registerEvents(new Invis(this), this);
-        Bukkit.getPluginManager().registerEvents(new Ocean(this), this);
-        Bukkit.getPluginManager().registerEvents(new Regen(this), this);
-        Bukkit.getPluginManager().registerEvents(new Speed(this), this);
-        Bukkit.getPluginManager().registerEvents(new Strength(this), this);
-        Bukkit.getPluginManager().registerEvents(new Thunder(this), this);
+        Bukkit.getPluginManager().registerEvents(new Emerald(), this);
+        Bukkit.getPluginManager().registerEvents(new Ender(), this);
+        Bukkit.getPluginManager().registerEvents(new Feather(), this);
+        Bukkit.getPluginManager().registerEvents(new Fire(), this);
+        Bukkit.getPluginManager().registerEvents(new Frost(), this);
+        Bukkit.getPluginManager().registerEvents(new Haste(), this);
+        Bukkit.getPluginManager().registerEvents(new Heart(), this);
+        Bukkit.getPluginManager().registerEvents(new Invis(), this);
+        Bukkit.getPluginManager().registerEvents(new Ocean(), this);
+        Bukkit.getPluginManager().registerEvents(new Regen(), this);
+        Bukkit.getPluginManager().registerEvents(new Speed(), this);
+        Bukkit.getPluginManager().registerEvents(new Strength(), this);
+        Bukkit.getPluginManager().registerEvents(new Thunder(), this);
 
         // Enabling apophis listeners if the config allows
         if (mainConfig.enableApophis()) {
-            getServer().getPluginManager().registerEvents(new Apophis(this), this);
+            getServer().getPluginManager().registerEvents(new Apophis(), this);
         }
 
         // Enabling thief listeners if the config allows
         if (mainConfig.enableThief()) {
-            getServer().getPluginManager().registerEvents(new Thief(this), this);
+            getServer().getPluginManager().registerEvents(new Thief(), this);
         }
     }
 
@@ -273,7 +277,7 @@ public class Infuse extends JavaPlugin implements Listener {
             JsonArray versions = gson.fromJson(response.body(), JsonArray.class);
 
             // If no versions are returned, defaulting to the current version
-            if (versions.size() == 0) {
+            if (versions.isEmpty()) {
                 LOGGER.warn("No versions published to modrinth, defaulting to current version");
                 return getVersion();
             }
