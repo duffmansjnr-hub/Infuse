@@ -6,6 +6,9 @@ import com.catadmirer.infuseSMP.effects.*;
 import com.catadmirer.infuseSMP.extraeffects.*;
 import com.catadmirer.infuseSMP.managers.*;
 import com.catadmirer.infuseSMP.placeholders.InfusePlaceholders;
+import com.catadmirer.infuseSMP.worldguard.WorldGuardAPI;
+import com.catadmirer.infuseSMP.worldguard.handlers.OceanEnabledHandler;
+import com.catadmirer.infuseSMP.worldguard.handlers.UseSparkHandler;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
@@ -18,6 +21,9 @@ import java.net.http.HttpResponse;
 import java.net.http.HttpResponse.BodyHandlers;
 import java.util.List;
 import java.util.stream.Stream;
+
+import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.session.SessionManager;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -58,6 +64,11 @@ public class Infuse extends JavaPlugin implements Listener {
         this.loop = new GlobalLoop(this);
         this.recipeManager = new RecipeManager(this);
         this.particleManager = new ParticleManager(this);
+    }
+
+    @Override
+    public void onLoad() {
+        if (Bukkit.getPluginManager().isPluginEnabled("WorldGuard")) new WorldGuardAPI().init();
     }
 
     public void onEnable() {
@@ -107,6 +118,19 @@ public class Infuse extends JavaPlugin implements Listener {
             LOGGER.info("Placeholders Enabled!");
         } else {
             LOGGER.warn("PlaceholderAPI is not installed, so custom placeholders won't work.");
+        }
+
+        if (Bukkit.getPluginManager().getPlugin("WorldGuard") != null && WorldGuardAPI.isEnabled()) {
+
+            final SessionManager session = WorldGuard.getInstance().getPlatform().getSessionManager();
+            try {
+                session.registerHandler(OceanEnabledHandler.getFactory(), null);
+                session.registerHandler(UseSparkHandler.getFactory(), null);
+            } catch (Exception ex) {
+                LOGGER.error("There has been a issue with registering one or multiple of the handlers. Flag features may not work.");
+            }
+
+            LOGGER.info("Worldguard hook successfully Enabled!");
         }
 
         // Logging the success message
