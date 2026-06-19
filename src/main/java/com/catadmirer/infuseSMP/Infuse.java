@@ -23,6 +23,7 @@ import java.util.stream.Stream;
 
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.session.SessionManager;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
@@ -51,6 +52,7 @@ public class Infuse extends JavaPlugin implements Listener {
     private final GlobalLoop loop;
     private final RecipeManager recipeManager;
     private final ParticleManager particleManager;
+    private String latestVersion;
 
     public static Infuse getInstance() {
         return instance;
@@ -63,6 +65,8 @@ public class Infuse extends JavaPlugin implements Listener {
         this.loop = new GlobalLoop(this);
         this.recipeManager = new RecipeManager(this);
         this.particleManager = new ParticleManager(this);
+
+        Bukkit.getScheduler().runTaskAsynchronously(this, () -> this.latestVersion = getLatestVersion());
     }
 
     @Override
@@ -120,15 +124,20 @@ public class Infuse extends JavaPlugin implements Listener {
         }
 
         // Registering the WorldGuard custom handler for 1/3 of the custom flags
-        if (Bukkit.getPluginManager().getPlugin("WorldGuard") != null && WorldGuardAPI.isEnabled()) {
+        if (Bukkit.getPluginManager().getPlugin("WorldGuard") != null && WorldGuardAPI.isLoaded()) {
             final SessionManager session = WorldGuard.getInstance().getPlatform().getSessionManager();
+
             try {
                 session.registerHandler(OceanEnabledHandler.getFactory(), null);
             } catch (Exception ex) {
                 LOGGER.warn("There has been a issue with registering a WorldGuard handler. Custom Flag 'Ocean_Enable' may not work.");
             }
 
-            LOGGER.info("Worldguard hook successfully Enabled!");
+            LOGGER.info("WorldGuard hook Enabled!");
+            WorldGuardAPI.setEnabled(true);
+        } else {
+            WorldGuardAPI.setEnabled(false);
+            LOGGER.warn("WorldGuard hook has failed to enable, Please look for warnings/errors that could of causes this.");
         }
 
         // Logging the success message
@@ -264,9 +273,7 @@ public class Infuse extends JavaPlugin implements Listener {
 
         if (dropHead) {
             ItemStack playerHead = new ItemStack(Material.PLAYER_HEAD);
-            playerHead.editMeta(SkullMeta.class, meta -> {
-                meta.setOwningPlayer(player);
-            });
+            playerHead.editMeta(SkullMeta.class, meta -> meta.setOwningPlayer(player));
             player.getWorld().dropItem(player.getLocation(), playerHead);
         }
     }
@@ -333,6 +340,8 @@ public class Infuse extends JavaPlugin implements Listener {
         Message msg = new Message(MessageType.JOIN_ABILITY_NOTIFY);
         msg.applyPlaceholder("control_mode", controlMode);
         player.sendMessage(msg.toComponent());
+
+        if (this.latestVersion == null || this.latestVersion.equals(getPluginMeta().getVersion())) return;
 
         // Checking for updates but only notifying the player if they are op.
         // TODO: Only run this on startup and save the result for when players join.
