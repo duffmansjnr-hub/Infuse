@@ -230,4 +230,22 @@ public class Fire extends InfuseEffect {
         event.getTarget().setFireTicks(100);
     }
 
+    @EventHandler
+    public void onBreak(BlockBreakEvent event) {
+        if (!plugin.getDataManager().hasEffect(event.getPlayer(), this)) return;
+
+        // TODO: ask turbo if we really need this or not, probably not
+        if (RegionBlocker.getInstance().isEffectBlocked(event.getPlayer(), this)) return;
+
+        final Iterator<Recipe> recipes = Bukkit.recipeIterator();
+        while (recipes.hasNext()) {
+            if (!(recipes.next() instanceof CookingRecipe<?> recipe) || !(recipe.getInputChoice().test(ItemStack.of(event.getBlock().getType())))) continue;
+
+            event.setDropItems(false);
+            event.getBlock().getWorld().dropItemNaturally(event.getBlock().getLocation().add(new Vector(0.5, 0.5, 0.5)), recipe.getResult());
+
+            return;
+        }
+    }
+
 }
