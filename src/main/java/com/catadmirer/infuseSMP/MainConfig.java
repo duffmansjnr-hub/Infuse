@@ -439,6 +439,22 @@ public class MainConfig {
             changeConfigValue("thunder.spark.base-radius", "thunder.spark.base_radius");
             changeConfigValue("thunder.spark.per-player-boost-radius", "thunder.spark.per_player_boost_radius");
 
+            changeConfigValue("apophis.blacklisted-worlds", "apophis.blacklisted_worlds");
+            changeConfigValue("thief.blacklisted-worlds", "thief.blacklisted_worlds");
+            changeConfigValue("emerald.blacklisted-worlds", "emerald.blacklisted_worlds");
+            changeConfigValue("ender.blacklisted-worlds", "ender.blacklisted_worlds");
+            changeConfigValue("feather.blacklisted-worlds", "feather.blacklisted_worlds");
+            changeConfigValue("fire.blacklisted-worlds", "fire.blacklisted_worlds");
+            changeConfigValue("frost.blacklisted-worlds", "frost.blacklisted_worlds");
+            changeConfigValue("haste.blacklisted-worlds", "haste.blacklisted_worlds");
+            changeConfigValue("heart.blacklisted-worlds", "heart.blacklisted_worlds");
+            changeConfigValue("invis.blacklisted-worlds", "invis.blacklisted_worlds");
+            changeConfigValue("ocean.blacklisted-worlds", "ocean.blacklisted_worlds");
+            changeConfigValue("regen.blacklisted-worlds", "regen.blacklisted_worlds");
+            changeConfigValue("speed.blacklisted-worlds", "speed.blacklisted_worlds");
+            changeConfigValue("strength.blacklisted-worlds", "strength.blacklisted_worlds");
+            changeConfigValue("thunder.blacklisted-worlds", "thunder.blacklisted_worlds");
+
             Infuse.LOGGER.info("Configuration update successful!");
         }
 
@@ -504,21 +520,21 @@ public class MainConfig {
         if (!config.contains("thunder.spark.base_radius")) config.set("thunder.spark.base_radius", 10);
         if (!config.contains("thunder.spark.per_player_boost_radius")) config.set("thunder.spark.per_player_boost_radius", 0.3);
 
-        if (!config.contains("apophis.blacklisted-worlds")) config.set("apophis.blacklisted-worlds", List.of());
-        if (!config.contains("thief.blacklisted-worlds")) config.set("apophis.blacklisted-worlds", List.of());
-        if (!config.contains("emerald.blacklisted-worlds")) config.set("apophis.blacklisted-worlds", List.of());
-        if (!config.contains("ender.blacklisted-worlds")) config.set("apophis.blacklisted-worlds", List.of());
-        if (!config.contains("feather.blacklisted-worlds")) config.set("apophis.blacklisted-worlds", List.of());
-        if (!config.contains("fire.blacklisted-worlds")) config.set("apophis.blacklisted-worlds", List.of());
-        if (!config.contains("frost.blacklisted-worlds")) config.set("apophis.blacklisted-worlds", List.of());
-        if (!config.contains("haste.blacklisted-worlds")) config.set("apophis.blacklisted-worlds", List.of());
-        if (!config.contains("heart.blacklisted-worlds")) config.set("apophis.blacklisted-worlds", List.of());
-        if (!config.contains("invis.blacklisted-worlds")) config.set("apophis.blacklisted-worlds", List.of());
-        if (!config.contains("ocean.blacklisted-worlds")) config.set("apophis.blacklisted-worlds", List.of());
-        if (!config.contains("regen.blacklisted-worlds")) config.set("apophis.blacklisted-worlds", List.of());
-        if (!config.contains("speed.blacklisted-worlds")) config.set("apophis.blacklisted-worlds", List.of());
-        if (!config.contains("strength.blacklisted-worlds")) config.set("apophis.blacklisted-worlds", List.of());
-        if (!config.contains("thunder.blacklisted-worlds")) config.set("apophis.blacklisted-worlds", List.of());
+        if (!config.contains("apophis.blacklisted_worlds")) config.set("apophis.blacklisted_worlds", List.of());
+        if (!config.contains("thief.blacklisted_worlds")) config.set("theif.blacklisted_worlds", List.of());
+        if (!config.contains("emerald.blacklisted_worlds")) config.set("emerald.blacklisted_worlds", List.of());
+        if (!config.contains("ender.blacklisted_worlds")) config.set("ender.blacklisted_worlds", List.of());
+        if (!config.contains("feather.blacklisted_worlds")) config.set("feather.blacklisted_worlds", List.of());
+        if (!config.contains("fire.blacklisted_worlds")) config.set("fire.blacklisted_worlds", List.of());
+        if (!config.contains("frost.blacklisted_worlds")) config.set("frost.blacklisted_worlds", List.of());
+        if (!config.contains("haste.blacklisted_worlds")) config.set("haste.blacklisted_worlds", List.of());
+        if (!config.contains("heart.blacklisted_worlds")) config.set("heart.blacklisted_worlds", List.of());
+        if (!config.contains("invis.blacklisted_worlds")) config.set("invis.blacklisted_worlds", List.of());
+        if (!config.contains("ocean.blacklisted_worlds")) config.set("ocean.blacklisted_worlds", List.of());
+        if (!config.contains("regen.blacklisted_worlds")) config.set("regen.blacklisted_worlds", List.of());
+        if (!config.contains("speed.blacklisted_worlds")) config.set("speed.blacklisted_worlds", List.of());
+        if (!config.contains("strength.blacklisted_worlds")) config.set("strength.blacklisted_worlds", List.of());
+        if (!config.contains("thunder.blacklisted_worlds")) config.set("thunder.blacklisted_worlds", List.of());
 
         save();
     }
