@@ -94,7 +94,7 @@ craft_limits:
   thief:    [1, 3]
 
 #
-# To blacklist from using a ability in a certain world, in the 'blacklisted-worlds:' in,
+# To blacklist from using a ability in a certain world, in the 'blacklisted_worlds:' in,
 # your chosen effect, add the world's name (The EXACT name) to the list.
 #
 
@@ -154,7 +154,7 @@ fire:
     lava_walk_speed: 0.6
   spark:
     radius: 5
-    explosion-radius: 5
+    explosion_radius: 5
   blacklisted_worlds: []
 
 frost:
@@ -204,7 +204,7 @@ invis:
   duration:
     default: 20
     augmented: 25
-  blacklisted-worlds:
+  blacklisted_worlds:
 
 ocean:
   cooldown:
