@@ -99,44 +99,6 @@ craft_limits:
 #
 
 # Full cooldown is duration + cooldown
-invis:
-  hide_kills: false
-  hide_deaths: false
-  cooldown:
-    default: 121
-    augmented: 61
-  duration:
-    default: 20
-    augmented: 25
-  blacklisted-worlds:
-
-apophis:
-  cooldown:
-    default: 125
-    augmented: 75
-
-  duration:
-    default: 15
-    augmented: 18
-
-  passive:
-    xp_stolen_per_hit: 15
-    xp_stolen_percent: 1
-    percent_xp_to_share: 0.5
-
-    lock_duration_seconds: 10
-
-    looting_level: 5
-    lava_walk_speed: 0.6
-    xp_multiplier: 2
-
-  spark:
-    radius: 5
-    explosion_radius: 5
-    xp_multiplier: 4
-
-  blacklisted_worlds:
-
 emerald:
   cooldown:
     default: 91
@@ -237,6 +199,17 @@ heart:
     augmented: 80
   blacklisted_worlds:
 
+invis:
+  hide_kills: false
+  hide_deaths: false
+  cooldown:
+    default: 121
+    augmented: 61
+  duration:
+    default: 20
+    augmented: 25
+  blacklisted-worlds:
+
 ocean:
   cooldown:
     default: 76
@@ -295,6 +268,33 @@ thunder:
     base_radius: 10
     per_player_boost_radius: 0.3
     strikes_per_player: 3
+  blacklisted_worlds:
+
+apophis:
+  cooldown:
+    default: 125
+    augmented: 75
+
+  duration:
+    default: 15
+    augmented: 18
+
+  passive:
+    xp_stolen_per_hit: 15
+    xp_stolen_percent: 1
+    percent_xp_to_share: 0.5
+
+    lock_duration_seconds: 10
+
+    looting_level: 5
+    lava_walk_speed: 0.6
+    xp_multiplier: 2
+
+  spark:
+    radius: 5
+    explosion_radius: 5
+    xp_multiplier: 4
+
   blacklisted_worlds:
 
 thief:
