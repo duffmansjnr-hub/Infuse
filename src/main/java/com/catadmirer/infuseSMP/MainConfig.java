@@ -10,6 +10,9 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
 
 public class MainConfig {
@@ -30,10 +33,7 @@ public class MainConfig {
      */
     public boolean load() {
         // Creating the file if it doesn't exist.
-        if (!file.exists()) {
-            file.getParentFile().mkdirs();
-            plugin.saveResource(file.getName(), true);
-        }
+        createFile();
 
         // Loading the config
         try {
@@ -56,13 +56,7 @@ public class MainConfig {
      */
     public boolean save() {
         // Creating the file if it doesn't exist.
-        if (!file.exists()) {
-            try {
-                file.createNewFile();
-            } catch (IOException e) {
-                return false;
-            }
-        }
+        createFile();
 
         // Saving the config
         try {
@@ -74,6 +68,18 @@ public class MainConfig {
         }
 
         return false;
+    }
+
+    public void createFile() {
+        plugin.saveResource(file.getName(), false);
+    }
+
+    public void backupConfig() {
+        try {
+            Files.copy(file.toPath(), Paths.get(file.getPath() + ".bak"), StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            Infuse.LOGGER.error("Could not backup config {}", file.getName(), e);
+        }
     }
 
     public List<NamespacedKey> getBlacklistedWorlds(InfuseEffect effect) {
@@ -396,6 +402,14 @@ public class MainConfig {
 
     public void applyUpdates() {
         if (this.config.getString("config_version") == null) {
+            // Backing up the old config and loading the new one
+            backupConfig();
+            createFile();
+
+            // Creating a second instance of MainConfig to put modified values into
+            MainConfig newConfig = new MainConfig(plugin);
+            newConfig.load();
+
             Infuse.LOGGER.info("Old configuration version has been found, updating configuration. This may take a minute.");
             this.config.set("config_version", "1.0");
 
