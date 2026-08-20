@@ -180,7 +180,7 @@ haste:
   duration:
     default: 15
     augmented: 20
-  enchantment:
+  passive:
     fortune_level: 5
     efficiency_level: 10
     unbreaking_level: 5
