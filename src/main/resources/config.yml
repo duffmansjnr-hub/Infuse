@@ -103,11 +103,9 @@ emerald:
   cooldown:
     default: 91
     augmented: 76
-
   duration:
     default: 30
     augmented: 35
-
   passive:
     xp_stolen_per_hit: 15
     xp_stolen_percent: 1
@@ -115,11 +113,9 @@ emerald:
     lock_duration_seconds: 10
     looting_level: 5
     xp_multiplier: 2
-
   spark:
     xp_multiplier: 4
-
-  blacklisted_worlds:
+  blacklisted_worlds: []
 
 ender:
   cooldown:
@@ -133,7 +129,7 @@ ender:
   spark:
     # WARNING: The higher this value is, the more it can impact server performance.
     max_distance: 15
-  blacklisted_worlds:
+  blacklisted_worlds: []
 
 feather:
   cooldown:
@@ -145,7 +141,7 @@ feather:
   land:
     radius: 4
     damage: 8
-  blacklisted_worlds:
+  blacklisted_worlds: []
 
 fire:
   cooldown:
@@ -159,7 +155,7 @@ fire:
   spark:
     radius: 5
     explosion-radius: 5
-  blacklisted_worlds:
+  blacklisted_worlds: []
 
 frost:
   cooldown:
@@ -175,7 +171,7 @@ frost:
     powdered_snow_walk_speed: 0.6
   spark:
     radius: 5
-  blacklisted_worlds:
+  blacklisted_worlds: []
 
 haste:
   cooldown:
@@ -188,7 +184,7 @@ haste:
     fortune_level: 5
     efficiency_level: 10
     unbreaking_level: 5
-  blacklisted_worlds:
+  blacklisted_worlds: []
 
 heart:
   cooldown:
@@ -197,7 +193,7 @@ heart:
   duration:
     default: 60
     augmented: 80
-  blacklisted_worlds:
+  blacklisted_worlds: []
 
 invis:
   hide_kills: false
@@ -226,8 +222,7 @@ ocean:
     pull_interval: 20 # In ticks (20 ticks = 1 second)
     pull_radius: 5
     pull_strength: 0.3
-
-  blacklisted_worlds:
+  blacklisted_worlds: []
 
 regen:
   cooldown:
@@ -238,7 +233,7 @@ regen:
     augmented: 30
   spark:
     heal_trusted_radius: 5
-  blacklisted_worlds:
+  blacklisted_worlds: []
 
 speed:
   cooldown:
@@ -250,7 +245,7 @@ speed:
   spark:
     dash_multiplier: 2
     player_velocity_multiplier: 2
-  blacklisted_worlds:
+  blacklisted_worlds: []
 
 strength:
   cooldown:
@@ -259,7 +254,7 @@ strength:
   duration:
     default: 15
     augmented: 20
-  blacklisted_worlds:
+  blacklisted_worlds: []
 
 thunder:
   cooldown:
@@ -272,40 +267,34 @@ thunder:
     base_radius: 10
     per_player_boost_radius: 0.3
     strikes_per_player: 3
-  blacklisted_worlds:
+  blacklisted_worlds: []
 
 apophis:
   cooldown:
     default: 125
     augmented: 75
-
   duration:
     default: 15
     augmented: 18
-
   passive:
     xp_stolen_per_hit: 15
     xp_stolen_percent: 1
     percent_xp_to_share: 0.5
-
     lock_duration_seconds: 10
-
     looting_level: 5
     lava_walk_speed: 0.6
     xp_multiplier: 2
-
   spark:
     radius: 5
     explosion_radius: 5
     xp_multiplier: 4
-
-  blacklisted_worlds:
+  blacklisted_worlds: []
 
 thief:
   cooldown:
     default: 300
     augmented: 150
-  blacklisted_worlds:
+  blacklisted_worlds: []
 
 extra_effects:
   Apophis: false
