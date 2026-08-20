@@ -428,9 +428,9 @@ public class MainConfig {
 
             changeConfigValue("ocean.passive.drown-strength", "ocean.passive.drown_strength");
             changeConfigValue("ocean.passive.drown-damage", "ocean.passive.drown_damage");
-            changeConfigValue("ocean.spark.drown-strength", "ocena.passive.drown_strength");
-            changeConfigValue("ocean.spark.drown-damage", "ocena.passive.drown_damage");
 
+            changeConfigValue("ocean.spark.drown-strength", "ocean.passive.drown_strength");
+            changeConfigValue("ocean.spark.drown-damage", "ocean.passive.drown_damage");
             changeConfigValue("regen.spark.heal-trusted-radius", "regen.spark.heal_trusted_radius");
 
             changeConfigValue("speed.dashMultiplier", "speed.spark.dash_multiplier");
