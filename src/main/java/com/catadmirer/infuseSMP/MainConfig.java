@@ -213,15 +213,15 @@ public class MainConfig {
     }
 
     public int oceanPullInterval() {
-        return config.getInt("ocean_pulling.pull.interval");
+        return config.getInt("ocean.pull_interval");
     }
 
     public int oceanPullRadius() {
-        return config.getInt("ocean_pulling.pull.radius");
+        return config.getInt("ocean.pull_radius");
     }
 
     public double oceanPullStrength() {
-        return config.getDouble("ocean_pulling.pull.strength");
+        return config.getDouble("ocean.pull_strength");
     }
 
     public int hitCounterDecaySeconds() {
@@ -428,9 +428,13 @@ public class MainConfig {
 
             changeConfigValue("ocean.passive.drown-strength", "ocean.passive.drown_strength");
             changeConfigValue("ocean.passive.drown-damage", "ocean.passive.drown_damage");
-
             changeConfigValue("ocean.spark.drown-strength", "ocean.passive.drown_strength");
             changeConfigValue("ocean.spark.drown-damage", "ocean.passive.drown_damage");
+
+            changeConfigValue("ocean_pulling.pull.interval", "ocean.spark.pull_interval");
+            changeConfigValue("ocean_pulling.pull.radius", "ocean.spark.pull_radius");
+            changeConfigValue("ocean_pulling.pull.strength", "ocean.spark.pull_strength");
+            
             changeConfigValue("regen.spark.heal-trusted-radius", "regen.spark.heal_trusted_radius");
 
             changeConfigValue("speed.dashMultiplier", "speed.spark.dash_multiplier");

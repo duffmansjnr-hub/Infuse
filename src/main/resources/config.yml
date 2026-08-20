@@ -223,6 +223,10 @@ ocean:
   spark:
     drown_strength: 20
     drown_damage: 2
+    pull_interval: 20 # In ticks (20 ticks = 1 second)
+    pull_radius: 5
+    pull_strength: 0.3
+
   blacklisted_worlds:
 
 regen:
@@ -302,12 +306,6 @@ thief:
     default: 300
     augmented: 150
   blacklisted_worlds:
-
-ocean_pulling:
-  pull:
-    interval: 20 # In ticks (20 ticks = 1 second)
-    radius: 5
-    strength: 0.3
 
 extra_effects:
   Apophis: false
